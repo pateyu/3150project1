@@ -13,20 +13,20 @@ RESET:
     out PORTD, temp
     out PORTE, temp
     
-    cbi DDRA, 1       
-    sbi PORTA, 1      
-PLUS:
+    cbi DDRA, 4       
+    sbi PORTA, 4      
+PLUS_DICE:
     inc counter                        ; Increment the counter
     cpi counter, 7                     ; Compare the counter with 7
-    brne SKIP_RESET                    ; If counter is not equal to 7, skip the reset
+    brne SKIP_RESET_DICE                    ; If counter is not equal to 7, skip the reset
     ldi counter, 1                     ; If counter is equal to 7, reset it to 1
-SKIP_RESET:
+SKIP_RESET_DICE:
     call DISPLAY_DICE_FACE             ; Call the subroutine to display the dice face corresponding to the counter
     call DELAY                         ; Call the delay subroutine to wait for a while
     rjmp CHECK_BUTTON_RELEASE          ; Jump to check if the button has been released
 
 CHECK_BUTTON_RELEASE:
-    sbis PINA3, 1                       ; Check if the bit 1 of PINA3 is set (SW2 released)
+    sbis PINA, 4                       ; Check if the bit 4 of PINA is set (SW5 released)
     rjmp CHECK_BUTTON_RELEASE          ; If SW2 is not released, keep checking
     rjmp MAIN_LOOP                     ; If SW2 is released, go back to the main loop
 

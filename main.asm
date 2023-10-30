@@ -19,10 +19,12 @@ RESET:
 	cbi DDRA, 1
 	cbi DDRA, 2
 	cbi DDRA, 3
+	cbi DDRA, 4
     sbi PORTA, 0
 	sbi PORTA, 1
 	sbi PORTA, 2
 	sbi PORTA, 3
+	sbi PORTA, 4
     
     ; switch is active low
 MAIN_LOOP:
@@ -42,8 +44,13 @@ CHECK_PA2:
 
 CHECK_PA3:
 	sbic PINA, 3
-	rjmp MAIN_LOOP
+	rjmp CHECK_PA4
 	rjmp INC_BOARD
+
+CHECK_PA4:
+	sbic PINA, 4
+	rjmp MAIN_LOOP
+	rjmp DICE_START
 
 PLUS:
    	 inc counter
@@ -121,7 +128,120 @@ SOUND_DELAY_LOOP_OFF:
 NO_SOUND:
     rjmp MAIN_LOOP
 
+DICE_START:
+	call CLEAR_BOARD
+	ldi counter, 0
+
+CHECK_DICE:
+	sbic PINA, 4
+	rjmp DICE_CLEAR
+	rjmp PLUS_DICE
+
+DICE_CLEAR:
+	sbic PINA, 2
+	rjmp CHECK_DICE
+	rjmp CLEAR_BOARD_MENU
+
+PLUS_DICE:
+    inc counter                        ; Increment the counter
+    cpi counter, 7                     ; Compare the counter with 7
+    brne SKIP_RESET_DICE                    ; If counter is not equal to 7, skip the reset
+    ldi counter, 1                     ; If counter is equal to 7, reset it to 1
+SKIP_RESET_DICE:
+    call DISPLAY_DICE_FACE             ; Call the subroutine to display the dice face corresponding to the counter
+    call DELAY                         ; Call the delay subroutine to wait for a while
+
+CHECK_BUTTON_RELEASE:
+    sbis PINA, 4                       ; Check if the bit 4 of PINA is set (SW5 released)
+    rjmp CHECK_BUTTON_RELEASE          ; If SW2 is not released, keep checking
+    rjmp CHECK_DICE                     ; If SW2 is released, go back to the main loop 
+
+DISPLAY_DICE_FACE:
+    ; Check the counter and call the corresponding subroutine
+    cpi counter, 1       ; If counter is 1, display face 1
+    breq DICE_ONE
+    cpi counter, 2       ; If counter is 2, display face 2
+    breq DICE_TWO
+    cpi counter, 3       ; If counter is 3, display face 3
+    breq DICE_THREE
+    cpi counter, 4       ; If counter is 4, display face 4
+    breq DICE_FOUR
+    cpi counter, 5       ; If counter is 5, display face 5
+    breq DICE_FIVE
+    cpi counter, 6       ; If counter is 6, display face 6
+    breq DICE_SIX
+    ret
+
+DICE_ONE:
+    ldi temp, 0b11111111  ; Turn off all LEDs
+    out PORTD, temp
+    ldi temp, 0b11111111  ; Turn off LED5 
+    out PORTE, temp
+    call DELAY
+    cbi PORTE, 5          ; Turn on LED5 
+    ret
+
+DICE_TWO:
+	ldi temp,0b11111111
+	out PORTD,temp
+	ldi temp, 0b11111111  ; Turn off all LEDs
+    out PORTE, temp
+    ldi temp, 0b11011011  ; LEDs 3 and 7 
+    out PORTD, temp
+    call DELAY
+    ret
+
+DICE_THREE:
+	ldi temp, 0b11111111
+	out PORTD, temp
+    ldi temp, 0b11011011 ; LEDs 3 and 7 on
+    out PORTD, temp
+	ldi temp, 0b00010000
+    out PORTE, temp          ; Turn on LED5 
+    call DELAY
+	call DELAY
+    ret
+
+DICE_FOUR:
+	ldi temp,0b11111111		; turn off LEDS
+	out PORTD, temp
+	ldi temp, 0b11111111   ; turn off PORT E
+    out PORTE, temp
+	ldi temp, 0b01011010 ; Turn on LED 7,3,1,and 9
+    out PORTD, temp
+    call DELAY
+    ret
+
+DICE_FIVE:
+	ldi temp,0b11111111
+	out PORTD, temp
+    ldi temp, 0b01011010  ; LEDs 1, 3, 7, and 9 on
+    out PORTD, temp
+    ldi temp, 0b00010000
+    out PORTE, temp             ; Turn on LED5 
+    call DELAY
+    ret
+
+DICE_SIX:
+
+	ldi temp,0b11111111
+	out PORTD, temp
+	ldi temp,0b11111111
+	out PORTE,temp
+    ldi temp, 0b01000010  ; LEDs 1, 3, 4, 6, 7, and 9 on
+    out PORTD, temp
+    call DELAY
+    ret
+
+
 CLEAR_BOARD:
+	clr counter
+	mov r20, r17
+	com r20
+	out PORTD, r20
+	ret
+
+CLEAR_BOARD_MENU:
 	clr counter
 	mov r20, r17
 	com r20
