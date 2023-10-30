@@ -26,7 +26,7 @@ SKIP_RESET:
     rjmp CHECK_BUTTON_RELEASE          ; Jump to check if the button has been released
 
 CHECK_BUTTON_RELEASE:
-    sbis PINA, 1                       ; Check if the bit 1 of PINA is set (SW2 released)
+    sbis PINA3, 1                       ; Check if the bit 1 of PINA3 is set (SW2 released)
     rjmp CHECK_BUTTON_RELEASE          ; If SW2 is not released, keep checking
     rjmp MAIN_LOOP                     ; If SW2 is released, go back to the main loop
 

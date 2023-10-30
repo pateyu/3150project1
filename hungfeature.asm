@@ -47,11 +47,11 @@ SOUND_LOW:
     rjmp PLAY_SOUND
 
 SOUND_MEDIUM:
-    ldi r16, 95   ; Adjust this value for a medium-frequency sound
+    ldi r16, 60   ; Adjust this value for a medium-frequency sound
     rjmp PLAY_SOUND
 
 SOUND_HIGH:
-    ldi r16, 140  ; Adjust this value for a high-frequency sound
+    ldi r16, 70  ; Adjust this value for a high-frequency sound
     rjmp PLAY_SOUND
 
 PLAY_SOUND:
