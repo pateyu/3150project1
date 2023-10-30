@@ -6,7 +6,6 @@ MOV r20,r17
 
 
 
-
 RESET:
 	; Initialization code
 	ldi temp, 0b00011111
@@ -25,7 +24,15 @@ MAIN_LOOP:
     rjmp MAIN_LOOP
     rjmp PLUS
 
+	sbic PINB, 0
+	
+	rjmp MAIN_LOOP
+	rjmp MINUS
 
+	sbic PINC, 0
+
+	rjmp MAIN_LOOP
+	rjmp CLEAR_BOARD
 
 
 
@@ -39,7 +46,23 @@ check:  sbis PINA,0
    	 rjmp check
    	 call delay
    	 rjmp MAIN_LOOP
-   	 
+
+MINUS:
+   	 dec counter
+	 mov r20, r17
+	 com r20
+	 out PORTD, r20
+	 call delay
+check_minus:  sbis PINB,0
+   	 rjmp check
+   	 call delay
+   	 rjmp MAIN_LOOP
+   	
+CLEAR_BOARD:
+	clr counter
+	mov r20, r17
+	out PORTD, r20
+	rjmp MAIN_LOOP
 
 
 Delay:  LDI R18, 255
