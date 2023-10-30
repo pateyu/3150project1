@@ -5,3 +5,6 @@ hungfeature.asm was added, not tested, this is assigned on PINA3, which incremen
 main.asm was added 2 new subroutines, the decrement and clear, PINA1 decrements the counter, PINA2 clears the counter
 
 main.asm at some point should have all features added to it and all other functionalities should be on different PIN in order to call upon our features, pretty sure this is the "menu" we're supposed to have
+
+10/30 Update:
+hungfeature.asm was implemented to main, decrement and clear_board feature successfully implemented
