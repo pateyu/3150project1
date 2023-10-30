@@ -16,11 +16,11 @@ RESET:
     cbi DDRC, 0    ; Configure PC0 as input for the clear button
 
 MAIN_LOOP:
-    sbis PIND, 0
+    sbis PINA3, 0
     rjmp INC_BOARD
 
-    ; Check if the clear button (PINC) is pressed
-    sbic PINC, 0
+    ; Check if the clear button (PINA2) is pressed
+    sbic PINA2, 0
     rjmp MAIN_LOOP    ; If it's not pressed, continue checking
     rjmp CLEAR_BOARD
 

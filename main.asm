@@ -24,12 +24,12 @@ MAIN_LOOP:
     rjmp MAIN_LOOP
     rjmp PLUS
 
-	sbic PINB, 0
+	sbic PINA1, 0
 	
 	rjmp MAIN_LOOP
 	rjmp MINUS
 
-	sbic PINC, 0
+	sbic PINA2, 0
 
 	rjmp MAIN_LOOP
 	rjmp CLEAR_BOARD
@@ -53,7 +53,7 @@ MINUS:
 	 com r20
 	 out PORTD, r20
 	 call delay
-check_minus:  sbis PINB,0
+check_minus:  sbis PINA1,0
    	 rjmp check
    	 call delay
    	 rjmp MAIN_LOOP
