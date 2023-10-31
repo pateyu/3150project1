@@ -15,6 +15,7 @@ RESET:
 	clr counter         	; Clear counter
 	;clr temp            	; Clear temp to ensure LEDs are off
 	out PORTD,temp     	; Set LEDs off initially
+	out PORTE,temp
     cbi DDRA, 0
 	cbi DDRA, 1
 	cbi DDRA, 2
@@ -30,12 +31,12 @@ RESET:
 MAIN_LOOP:
     sbic PINA, 0
     rjmp CHECK_PA1
-    rjmp PLUS
+    rjmp PLUS_CHECK_MAX
 
 CHECK_PA1:
     sbic PINA, 1
     rjmp CHECK_PA2
-    rjmp MINUS
+    rjmp MINUS_CHECK_MIN
 
 CHECK_PA2:
     sbic PINA, 2
@@ -52,6 +53,10 @@ CHECK_PA4:
 	rjmp MAIN_LOOP
 	rjmp DICE_START
 
+PLUS_CHECK_MAX:
+	 cpi counter, 31
+	 breq PLUS_ZERO
+
 PLUS:
    	 inc counter
    	 mov r20,r17
@@ -63,6 +68,21 @@ check_plus:  sbis PINA,0
    	 call delay
    	 rjmp MAIN_LOOP
 
+PLUS_ZERO:
+	clr counter
+   	mov r20,r17
+   	com r20
+   	out PORTD, r20
+   	call delay
+check_plus_zero:  sbis PINA,0
+   	rjmp check_plus_zero
+   	call delay
+   	rjmp MAIN_LOOP
+
+MINUS_CHECK_MIN:
+	cpi counter, 0
+	breq MINUS_ZERO
+
 MINUS:
    	 dec counter
 	 mov r20, r17
@@ -73,6 +93,39 @@ check_minus:  sbis PINA,1
    	 rjmp check_minus
    	 call delay
    	 rjmp MAIN_LOOP
+
+MINUS_ZERO:
+	ldi counter, 31
+	mov r20, r17
+	com r20
+	out PORTD, r20
+	call delay
+check_minus_zero:  sbis PINA,1
+   	rjmp check_minus_zero
+   	call delay
+   	rjmp MAIN_LOOP
+
+BEEP:
+    SBI PORTE, 4 ; pushing the speaker out 
+
+    LDI R19, 95
+    LOOP6: LDI R22, 20
+    LOOP7: NOP
+        DEC R22
+        BRNE LOOP6
+        DEC R19
+        BRNE LOOP7
+
+    CBI PORTE, 4 ; pulling the speaker in 
+
+    LDI R19, 95
+    LOOP4: LDI R22, 20
+    LOOP5: NOP
+        DEC R22
+        BRNE LOOP5
+        DEC R19
+        BRNE LOOP4
+	ret
 
 INC_BOARD:
     ; Increment the board based on a timer
