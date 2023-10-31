@@ -68,8 +68,8 @@ check_plus:  sbis PINA,0
    	 call delay
    	 rjmp MAIN_LOOP
 
-PLUS_ZERO:
-	clr counter
+PLUS_ZERO: ; this subroutine is called when increment button is pressed when the counter is already at 31, this function resets counter back to 0
+	clr counter ; BEEP function should be called but I can't get it to work rn
    	mov r20,r17
    	com r20
    	out PORTD, r20
@@ -94,7 +94,7 @@ check_minus:  sbis PINA,1
    	 call delay
    	 rjmp MAIN_LOOP
 
-MINUS_ZERO:
+MINUS_ZERO: ; very similar feature as PLUS_ZERO but this one just sets counter to 31, BEEP function should be called but I currently can't get it to work
 	ldi counter, 31
 	mov r20, r17
 	com r20
