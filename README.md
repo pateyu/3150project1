@@ -1,3 +1,8 @@
 # 3150project1
 
-This is for testing the implementation of the dice feature, debugging needed. Dice face currently is not showing correctly
+DiceFeature done
+PINA 0 increment
+PINA 1 decrement
+PINA 2 clear
+PINA 3 auto increment
+PINA 4 dice

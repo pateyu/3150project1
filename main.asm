@@ -9,8 +9,8 @@ MOV r20,r17
 
 RESET:
 	; Initialization code
-	ldi temp, 0b00011111
-	out DDRD, temp      	; Configure PD0 to PD4 as output
+	ldi temp, 0b11111111
+	out DDRD, temp      	; Configure PD0 to PD7 as output
 	out DDRE, temp      	; Configure PE4 as output
 	clr counter         	; Clear counter
 	;clr temp            	; Clear temp to ensure LEDs are off
@@ -239,6 +239,8 @@ CLEAR_BOARD:
 	mov r20, r17
 	com r20
 	out PORTD, r20
+	ldi temp, 0b11111111  ; Turn off LED5 
+    out PORTE, temp
 	ret
 
 CLEAR_BOARD_MENU:
@@ -246,6 +248,8 @@ CLEAR_BOARD_MENU:
 	mov r20, r17
 	com r20
 	out PORTD, r20
+	ldi temp, 0b11111111  ; Turn off LED5 
+    out PORTE, temp
 	rjmp MAIN_LOOP
 
 
