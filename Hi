@@ -1,0 +1,47 @@
+//For HI
+
+;define h_pattern 
+.def h_pattern = r20
+
+;define i_pattern 
+.def i_pattern = r21
+
+; Pattern for the letter "H"
+ldi h_pattern, 0b10010010
+
+; Pattern for the letter "I"
+ldi i_pattern, 0b00111000
+
+CHECK_SW7:
+    ; Display the letter "H"
+    ldi temp, h_pattern ; Load the "H" pattern
+    out PORTD, temp
+    ldi temp, 0b10000010 ; Set the "H" pattern on PORTE
+    out PORTE, temp
+
+    ; Wait for some time to display "H"
+    call delay
+
+    ; Clear the display
+    ldi temp, 0b11111111 ; Turn off all LEDs
+    out PORTD, temp
+    out PORTE, temp
+
+    ; Wait for some time before displaying "I"
+    call delay
+
+    ; Display the letter "I"
+    ldi temp, i_pattern ; Load the "I" pattern
+    out PORTD, temp
+    ldi temp, 0b00000000 ; Set the "I" pattern on PORTE
+    out PORTE, temp
+
+    ; Wait for some time to display "I"
+    call delay
+
+    ; Clear the display
+    ldi temp, 0b11111111 ; Turn off all LEDs
+    out PORTD, temp
+    out PORTE, temp
+
+    rjmp MAIN_LOOP
