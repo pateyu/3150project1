@@ -1,47 +1,67 @@
-//For HI
+.def temp = r16
 
-;define h_pattern 
-.def h_pattern = r20
+ldi r17, 0b00000000
+.def counter = r17
 
-;define i_pattern 
-.def i_pattern = r21
+MOV r20, r17
 
-; Pattern for the letter "H"
-ldi h_pattern, 0b10010010
+RESET:
+    ; Initialization code
+    ldi temp, 0b11111111
+    out DDRD, temp       ; Configure PD0 to PD7 as output
+    out DDRE, temp       ; Configure PE as output
 
-; Pattern for the letter "I"
-ldi i_pattern, 0b00111000
-
-CHECK_SW7:
-    ; Display the letter "H"
-    ldi temp, h_pattern ; Load the "H" pattern
-    out PORTD, temp
-    ldi temp, 0b10000010 ; Set the "H" pattern on PORTE
+    out PORTD, temp      ; Set LEDs off initially
     out PORTE, temp
+    cbi DDRA, 7
+    sbi PORTA, 7
 
-    ; Wait for some time to display "H"
+MAIN_LOOP:
+    sbic PINA, 7
+    rjmp MAIN_LOOP
+    call delay           ; Debounce
+    rjmp CHECK_COUNTER
+
+CHECK_COUNTER:
+    cpi counter, 0
+    breq H_LIGHT
     call delay
-
-    ; Clear the display
-    ldi temp, 0b11111111 ; Turn off all LEDs
-    out PORTD, temp
-    out PORTE, temp
-
-    ; Wait for some time before displaying "I"
     call delay
-
-    ; Display the letter "I"
-    ldi temp, i_pattern ; Load the "I" pattern
-    out PORTD, temp
-    ldi temp, 0b00000000 ; Set the "I" pattern on PORTE
-    out PORTE, temp
-
-    ; Wait for some time to display "I"
     call delay
+    rjmp I_LIGHT
 
-    ; Clear the display
-    ldi temp, 0b11111111 ; Turn off all LEDs
-    out PORTD, temp
-    out PORTE, temp
+delay:
+    LDI R19, 255
 
+    LOOP2:
+    LDI R21, 255
+
+    LOOP3:
+    NOP
+    DEC R21
+    BRNE LOOP3
+    DEC R19
+    BRNE LOOP2
+    ret
+
+
+H_LIGHT:
+    ldi counter, 1       ; Update counter
+    ldi r16, 0b01000010
+    ldi r17, 0b11011111
+    out PORTD, r16
+    out PORTE, r17
+    rjmp WAIT_FOR_RELEASE
+
+I_LIGHT:
+    ldi counter, 0       ; Reset counter
+    ldi r16, 0b00011000
+    ldi r17, 0b11001111  ; Turn on LED5 on PORTE (PE5)
+    out PORTD, r16
+    out PORTE, r17
+    rjmp WAIT_FOR_RELEASE
+
+WAIT_FOR_RELEASE:
+    sbis PINA, 7
+    rjmp WAIT_FOR_RELEASE
     rjmp MAIN_LOOP
