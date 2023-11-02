@@ -438,16 +438,16 @@ LOOP30:
     ret
 
 BUZZER_START:
-    CALL NOTE1
+    CALL NOTE1 ; this is the note we want to call to play the actual buzzer sound
     RJMP MAIN_LOOP ; Return to the main loop after playing the buzzer
 NOTE1:
-    SBI PORTE, 4
-    CALL DELAY100
-    CBI PORTE, 4
-DELAY100: LDI R17, 200
-    LOOP100: LDI R18, 59
+    SBI PORTE, 4 ; this is turning the speaker on
+    CALL DELAY100 ; this is calling the delay loop
+    CBI PORTE, 4 ; this is turning the speaker off
+DELAY100: LDI R17, 200 ; this is the delay loop where most of my calculations were made
+    LOOP100: LDI R18, 59 ; the 59 in this section is the number that I mainly took time calculating
         LOOP200: 
-            NOP
+            NOP ; the NOPs where added to have the proper loop timing
             NOP
             DEC r18
             BRNE LOOP200
