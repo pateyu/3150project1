@@ -24,17 +24,19 @@ RESET:
 	cbi DDRA, 3
 	cbi DDRA, 4
 	cbi DDRA, 7
+	cbi DDRA, 6
+	cbi DDRA, 5
     sbi PORTA, 0
 	sbi PORTA, 1
 	sbi PORTA, 2
 	sbi PORTA, 3
 	sbi PORTA, 4
 	sbi PORTA, 7
+	sbi PORTA, 6
+	sbi PORTA, 5
     
     ; switch is active low
 MAIN_LOOP:
-	
-
     sbic PINA, 0
     rjmp CHECK_PA1
     rjmp PLUS_CHECK_MAX
@@ -60,10 +62,20 @@ CHECK_PA4:
 	rjmp DICE_START
 CHECK_PA7:
 	sbic PINA,7
-	rjmp MAIN_LOOP
+	rjmp CHECK_PA6
 	call delay
-	
 	rjmp CHECK_COUNTER
+CHECK_PA6:
+	sbic PINA,6
+	rjmp CHECK_PA5
+	call delay
+	rjmp CHECK_BUTTON_RELEASE6
+
+CHECK_PA5:
+	sbic PINA,5
+	rjmp MAIN_LOOP
+	RJMP BUZZER_START
+
 
 PLUS_CHECK_MAX:
 	 cpi counter, 31
@@ -107,7 +119,7 @@ check_minus:  sbis PINA,1
    	 call delay
    	 rjmp MAIN_LOOP
 
-MINUS_ZERO: ; very similar feature as PLUS_ZERO but this one just sets counter to 31, BEEP function should be called but I currently can't get it to work
+MINUS_ZERO: 
 	ldi counter, 31
 	call TURN_ON_SPEAKER
 	mov r20, r17
@@ -119,15 +131,15 @@ check_minus_zero:  sbis PINA,1
    	call delay
    	rjmp MAIN_LOOP
 
-TURN_ON_SPEAKER:	LDI R31, 0x2F ; change this up depending how long you want it to last
+TURN_ON_SPEAKER:	LDI R31, 0x2F 
 	SQUARE_WAVE:
-						CBI PORTE, 4 ; set buzzer to high
-						CALL SM_DELAY
-						SBI PORTE, 4 ; set buzzer to low
-						CALL SM_DELAY
-						DEC R31
-						BRNE SQUARE_WAVE
-					RET
+		CBI PORTE, 4 ; set buzzer to high
+		CALL SM_DELAY
+		SBI PORTE, 4 ; set buzzer to low
+		CALL SM_DELAY
+		DEC R31
+		BRNE SQUARE_WAVE
+	RET
 
 ; Delay Function used for the buzzer
 SM_DELAY:
@@ -362,4 +374,84 @@ WAIT_FOR_RELEASE:
     rjmp WAIT_FOR_RELEASE
 	rjmp MAIN_LOOP
 
+
+CHECK_BUTTON_RELEASE6:
+    sbis PINA, 6          ; Check if the button is released
+    rjmp CHECK_BUTTON_RELEASE6
+    rjmp SOS_SIGNAL
+
+SOS_SIGNAL:
+    call DOT
+    call SPACE
+    call DOT
+    call SPACE
+    call DOT
+    call SPACE
+    call DASH
+    call SPACE
+    call DASH
+    call SPACE
+    call DASH
+    call SPACE
+    call DOT
+    call SPACE
+    call DOT
+    call SPACE
+    call DOT
+    rjmp CHECK_PA6
+
+DOT:
+    ldi temp, 0b11111110  ; Turn on LED
+    out PORTD, temp
+    call NEWDELAY
+    ldi temp, 0b11111111  ; Turn off LED
+    out PORTD, temp
+    ret
+
+DASH:
+    ldi temp, 0b11111110  ; Turn on LED
+    out PORTD, temp
+    call NEWDELAY
+    call NEWDELAY            ; Longer delay for DASH
+    ldi temp, 0b11111111  ; Turn off LED
+    out PORTD, temp
+    ret
+
+SPACE:
+    call NEWDELAY
+    ret
+
+NEWDELAY:
+    LDI R19, 255
+LOOP10:
+    LDI R20, 255
+LOOP20:
+    LDI R21, 50
+LOOP30:
+    NOP
+    DEC R21
+    BRNE LOOP30
+    DEC R20
+    BRNE LOOP20
+    DEC R19
+    BRNE LOOP10
+    ret
+
+BUZZER_START:
+    CALL NOTE1
+    RJMP MAIN_LOOP ; Return to the main loop after playing the buzzer
+NOTE1:
+    SBI PORTE, 4
+    CALL DELAY100
+    CBI PORTE, 4
+DELAY100: LDI R17, 200
+    LOOP100: LDI R18, 59
+        LOOP200: 
+            NOP
+            NOP
+            DEC r18
+            BRNE LOOP200
+            DEC  R17
+            BRNE LOOP100
+            RET
 
