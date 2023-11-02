@@ -402,23 +402,23 @@ SOS_SIGNAL:
 
 DOT:
     ldi temp, 0b11111110  ; Turn on LED
-    out PORTD, temp
-    call NEWDELAY
+    out PORTD, temp	; Set the PORTD to the binary value
+    call NEWDELAY	; Call the "NEWDELAY" subroutine to control timing
     ldi temp, 0b11111111  ; Turn off LED
-    out PORTD, temp
+    out PORTD, temp	; Set the PORTD to the binary value
     ret
 
 DASH:
     ldi temp, 0b11111110  ; Turn on LED
-    out PORTD, temp
-    call NEWDELAY
+    out PORTD, temp	; Set the PORTD to the binary value
+    call NEWDELAY	; Call the "NEWDELAY" subroutine to control timing
     call NEWDELAY            ; Longer delay for DASH
     ldi temp, 0b11111111  ; Turn off LED
-    out PORTD, temp
+    out PORTD, temp	; Set the PORTD to the binary value
     ret
 
 SPACE:
-    call NEWDELAY
+    call NEWDELAY	;Call the "NEWDELAY" subroutine to create a time gap (space)
     ret
 
 NEWDELAY:
